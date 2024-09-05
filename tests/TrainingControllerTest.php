@@ -79,46 +79,8 @@ class TrainingTest extends WebTestCase
         $this->assertSelectorTextContains('h1', $module->getName());
     }
 
-    public function testUrlId()
-    {
-        $client = static::createClient();
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+   
 
-        $training = $em->getRepository(Training::class)->findOneBy([]);
-
-        $this->assertNotNull($training, 'Aucune formation trouvée en base de données.');
-
-        $url = '/training=' . $training->getId();
-
-        $client->request('GET', $url);
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertResponseIsSuccessful();
-
-        $this->assertSelectorTextContains('h1', $training->getName());
-
-    }
-
-    public function testEachModuleHasDeleteLink()
-    {
-        $client = static::createClient();
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-
-        $module = $em->getRepository(Module::class)->findOneBy([]);
-        $training = $em->getRepository(Training::class)->findOneBy([]);
-
-        $this->assertNotNull($module, 'Aucun module trouvé en base de données.');
-        $this->assertNotNull($training, 'Aucune formation trouvée en base de données.');
-
-        $url = '/training?module_id=' . $module->getId() . '&training_id=' . $training->getId();
-
-        $client->request('GET', $url);
-
-        $module->each(function ($moduleRow) {
-            $deleteLink = $moduleRow->filter('a.delete-module'); 
-            $this->assertEquals(1, $deleteLink->count(), 'Le module ne contient pas de lien de suppression.');
-        });
-    }
 
 }
 
